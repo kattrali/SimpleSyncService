@@ -79,6 +79,8 @@ static SimpleSyncService * sharedServiceInstance;
   withEntityDescription:(NSEntityDescription *)entityDescription
               inContext:(NSManagedObjectContext *)context
     withIdentifierNamed:(NSString *)identifierPropertyName {
+    if (data.count == 0) return YES;
+
     NSError *error = nil;
     NSArray *updatedIdentifiers = [data valueForKey:identifierPropertyName];
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:entityDescription.name];
