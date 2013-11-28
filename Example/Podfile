@@ -1,5 +1,6 @@
 platform :osx, "10.8"
 
+pod "ObjectiveSugar"
 pod "AFNetworking"
 pod "SimpleSyncService", :path =>"../SimpleSyncService.podspec"
 

@@ -11,5 +11,6 @@
 @interface DMMAppDelegate : NSObject <NSApplicationDelegate>
 
 @property (assign) IBOutlet NSWindow *window;
+@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 
 @end

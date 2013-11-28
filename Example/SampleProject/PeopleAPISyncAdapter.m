@@ -11,8 +11,7 @@
 
 @implementation PeopleAPISyncAdapter
 
-- (void)fetchDataWithCompletion:(SyncCompletionBlock)completionBlock
-{
+- (void)fetchDataWithCompletion:(SyncCompletionBlock)completionBlock {
     NSLog(@"Synchronizing with People API...");
     __block SyncCompletionBlock block = completionBlock;
     [PeopleAPI fetchUpdatedDataWithCompletionBlock:^(NSArray *data, NSError *error) {

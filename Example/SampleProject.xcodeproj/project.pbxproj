@@ -23,6 +23,8 @@
 		8A26F709184595EA00AFE070 /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A26F708184595EA00AFE070 /* Person.m */; };
 		8A26F70C1847150300AFE070 /* PeopleAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A26F70B1847150300AFE070 /* PeopleAPI.m */; };
 		8A26F70F1847253300AFE070 /* SimpleSyncServiceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A26F70E1847253300AFE070 /* SimpleSyncServiceTests.m */; };
+		8A26F7121847F76A00AFE070 /* AddressBookSyncAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A26F7111847F76A00AFE070 /* AddressBookSyncAdapter.m */; };
+		8A26F7141847F85A00AFE070 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A26F7131847F85A00AFE070 /* AddressBook.framework */; };
 		8AE38A3518450D1700AEC93C /* SampleProject.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8AE38A3318450D1700AEC93C /* SampleProject.xcdatamodeld */; };
 		8AE38A3618450D1700AEC93C /* SampleProject.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8AE38A3318450D1700AEC93C /* SampleProject.xcdatamodeld */; };
 		984A838CCABF4985A0644A6F /* libPods-SampleProjectTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BB897F1FD32F457CB9063C1E /* libPods-SampleProjectTests.a */; };
@@ -66,6 +68,9 @@
 		8A26F70A1847150300AFE070 /* PeopleAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleAPI.h; sourceTree = "<group>"; };
 		8A26F70B1847150300AFE070 /* PeopleAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleAPI.m; sourceTree = "<group>"; };
 		8A26F70E1847253300AFE070 /* SimpleSyncServiceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleSyncServiceTests.m; sourceTree = "<group>"; };
+		8A26F7101847F76A00AFE070 /* AddressBookSyncAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookSyncAdapter.h; sourceTree = "<group>"; };
+		8A26F7111847F76A00AFE070 /* AddressBookSyncAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookSyncAdapter.m; sourceTree = "<group>"; };
+		8A26F7131847F85A00AFE070 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		8AE38A3418450D1700AEC93C /* SampleProject.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = SampleProject.xcdatamodel; sourceTree = "<group>"; };
 		95BDC89118674BD0B2F95F33 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		BB897F1FD32F457CB9063C1E /* libPods-SampleProjectTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SampleProjectTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -76,6 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A26F7141847F85A00AFE070 /* AddressBook.framework in Frameworks */,
 				8A08A4DD18450CCA00400AF7 /* CoreData.framework in Frameworks */,
 				8A10629C1845003200F04E3E /* Cocoa.framework in Frameworks */,
 				873507AF788746708B486194 /* libPods.a in Frameworks */,
@@ -119,6 +125,7 @@
 		8A10629A1845003200F04E3E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8A26F7131847F85A00AFE070 /* AddressBook.framework */,
 				8A10629B1845003200F04E3E /* Cocoa.framework */,
 				8A1062BA1845003200F04E3E /* XCTest.framework */,
 				8A10629D1845003200F04E3E /* Other Frameworks */,
@@ -188,6 +195,8 @@
 			children = (
 				8A1062D21845044900F04E3E /* PeopleAPISyncAdapter.h */,
 				8A1062D31845044900F04E3E /* PeopleAPISyncAdapter.m */,
+				8A26F7101847F76A00AFE070 /* AddressBookSyncAdapter.h */,
+				8A26F7111847F76A00AFE070 /* AddressBookSyncAdapter.m */,
 			);
 			name = "Sync Adapters";
 			sourceTree = "<group>";
@@ -385,6 +394,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A26F7121847F76A00AFE070 /* AddressBookSyncAdapter.m in Sources */,
 				8A1062A81845003200F04E3E /* main.m in Sources */,
 				8A1062D41845044900F04E3E /* PeopleAPISyncAdapter.m in Sources */,
 				8A26F709184595EA00AFE070 /* Person.m in Sources */,

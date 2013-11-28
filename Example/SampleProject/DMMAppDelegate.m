@@ -9,6 +9,7 @@
 #import "DMMAppDelegate.h"
 #import "Person.h"
 #import "PeopleAPISyncAdapter.h"
+#import "AddressBookSyncAdapter.h"
 
 @interface DMMAppDelegate()
 
@@ -20,6 +21,7 @@
 @implementation DMMAppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    self.managedObjectContext = [[CoreDataManager sharedManager] managedObjectContext];
     self.syncQueue = [[NSOperationQueue alloc] init];
     [self initializeSyncService];
     [self.syncService start];
@@ -35,7 +37,10 @@
     PeopleAPISyncAdapter *apiAdapter = [[PeopleAPISyncAdapter alloc] initWithInterval:5
                                                                            entityName:[Person entityName]
                                                                            modelIDKey:@"email"];
-    self.syncService = [[SimpleSyncService alloc] initWithAdapters:@[apiAdapter]
+    AddressBookSyncAdapter *contactAdapter = [[AddressBookSyncAdapter alloc] initWithInterval:10
+                                                                                   entityName:[Person entityName]
+                                                                                   modelIDKey:@"email"];
+    self.syncService = [[SimpleSyncService alloc] initWithAdapters:@[apiAdapter, contactAdapter]
                                                           useQueue:self.syncQueue];
 }
 

@@ -29,6 +29,7 @@ PODS:
 DEPENDENCIES:
   - AFNetworking
   - Kiwi/XCTest
+  - ObjectiveSugar
   - SimpleSyncService (from `../SimpleSyncService.podspec`)
 
 EXTERNAL SOURCES:
