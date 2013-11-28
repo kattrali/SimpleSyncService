@@ -1,0 +1,8 @@
+platform :osx, "10.8"
+
+pod "AFNetworking"
+pod "SimpleSyncService", :path =>"../SimpleSyncService.podspec"
+
+target :SampleProjectTests, :exclusive => true do
+  pod 'Kiwi/XCTest'
+end
