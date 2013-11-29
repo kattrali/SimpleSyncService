@@ -16,6 +16,10 @@
 @property (nonatomic, strong) SimpleSyncService *syncService;
 @property (nonatomic, strong) NSOperationQueue *syncQueue;
 
+@property (weak) IBOutlet NSTextField *emailField;
+@property (weak) IBOutlet NSTextField *nameField;
+@property (weak) IBOutlet NSTextField *catsField;
+
 @end
 
 @implementation DMMAppDelegate
@@ -42,6 +46,25 @@
                                                                                    modelIDKey:@"email"];
     self.syncService = [[SimpleSyncService alloc] initWithAdapters:@[apiAdapter, contactAdapter]
                                                           useQueue:self.syncQueue];
+}
+
+- (IBAction)saveNewMember:(NSButton *)sender {
+    NSString *email = [self.emailField stringValue];
+    if (email) {
+        NSMutableDictionary *attributes = @{@"email": email}.mutableCopy;
+        NSString *name = [self.nameField stringValue];
+        if (name) attributes[@"name"] = name;
+        NSString *cats = [self.catsField stringValue];
+        if (cats) attributes[@"numberOfCats"] = @([cats integerValue]);
+        [self.emailField setStringValue:@""];
+        [self.nameField setStringValue:@""];
+        [self.catsField setStringValue:@""];
+
+        [SimpleSyncService synchronizeData:@[attributes]
+                            withEntityName:[Person entityName]
+                                 inContext:[[CoreDataManager sharedManager] managedObjectContext]
+                       withIdentifierNamed:@"email"];
+    }
 }
 
 @end

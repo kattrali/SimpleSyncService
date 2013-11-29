@@ -59,7 +59,7 @@ describe(@"simple service", ^{
     describe(@"scheduling with adapters", ^{
 
         beforeEach(^{
-            NSArray *adapters = @[[[PeopleAPISyncAdapter alloc] initWithInterval:0.5
+            NSArray *adapters = @[[[PeopleAPISyncAdapter alloc] initWithInterval:0.75
                                                                       entityName:[Person entityName]
                                                                       modelIDKey:@"email"]];
             SimpleSyncService *service = [[SimpleSyncService alloc] initWithAdapters:adapters
