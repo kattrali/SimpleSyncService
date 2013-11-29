@@ -13,10 +13,8 @@
 
 void synchronizeData(NSArray *data) {
     NSManagedObjectContext *context = [[CoreDataManager sharedManager] managedObjectContext];
-    NSEntityDescription *person = [NSEntityDescription entityForName:[Person entityName]
-                                              inManagedObjectContext:context];
     [SimpleSyncService synchronizeData:data
-                 withEntityDescription:person
+                        withEntityName:[Person entityName]
                              inContext:context
                    withIdentifierNamed:@"email"];
 }

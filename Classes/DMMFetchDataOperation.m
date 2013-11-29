@@ -53,11 +53,9 @@
     [self.adapter fetchDataWithCompletion:^(NSArray *fetchedData, NSError *error) {
         NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
         context.parentContext = [[CoreDataManager sharedManager] managedObjectContext];
-        NSEntityDescription *description = [NSEntityDescription entityForName:entityName
-                                                       inManagedObjectContext:context];
 
         [SimpleSyncService synchronizeData:fetchedData
-                     withEntityDescription:description
+                            withEntityName:entityName
                                  inContext:context
                        withIdentifierNamed:modelIdentifier];
     }];

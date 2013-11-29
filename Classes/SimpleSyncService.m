@@ -76,14 +76,14 @@ static SimpleSyncService * sharedServiceInstance;
 }
 
 + (BOOL)synchronizeData:(NSArray *)data
-  withEntityDescription:(NSEntityDescription *)entityDescription
+         withEntityName:(NSString *)entityName
               inContext:(NSManagedObjectContext *)context
     withIdentifierNamed:(NSString *)identifierPropertyName {
     if (data.count == 0) return YES;
 
     NSError *error = nil;
     NSArray *updatedIdentifiers = [data valueForKey:identifierPropertyName];
-    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:entityDescription.name];
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:entityName];
     NSString *propertyFormat = [NSString stringWithFormat:@"%@ IN %%@", identifierPropertyName];
     request.predicate = [NSPredicate predicateWithFormat:propertyFormat, updatedIdentifiers];
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:identifierPropertyName ascending:YES]];
@@ -96,7 +96,7 @@ static SimpleSyncService * sharedServiceInstance;
                                                  withValue:identifier
                                                     forKey:identifierPropertyName];
             if (!record) {
-                record = [NSEntityDescription insertNewObjectForEntityForName:entityDescription.name
+                record = [NSEntityDescription insertNewObjectForEntityForName:entityName
                                                        inManagedObjectContext:context];
             }
             [record update:data[i]];

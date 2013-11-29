@@ -52,14 +52,14 @@
  Synchronize Core Data entity instances with an array of updated model 
  data in dictionaries
  @param data an NSArray of NSDictionary instances
- @param entityDescription the description of the entity model to be synchronized
+ @param entityName the name of the entity model to be synchronized
  @param context an NSManagedObjectContext on which Core Data tasks should
  be performed
  @param identifierPropertyName a property name with corresponding unique
  values in the data array objects and the core data model
  */
 + (BOOL)synchronizeData:(NSArray *)data
-  withEntityDescription:(NSEntityDescription *)entityDescription
+         withEntityName:(NSString *)entityName
               inContext:(NSManagedObjectContext *)context
     withIdentifierNamed:(NSString *)identifierPropertyName;
 
