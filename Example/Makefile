@@ -9,8 +9,8 @@ clean:
 spec:
 	$(BUILD_TOOL) $(DEFAULT_BUILD_ARGS) test
 
-update_pods:
+install:
 	gem update cocoapods
 	pod install
 
-ci: update_pods clean spec
+ci: clean spec
