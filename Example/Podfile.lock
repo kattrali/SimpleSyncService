@@ -23,7 +23,7 @@ PODS:
   - ObjectiveRecord (1.4.0):
     - ObjectiveSugar
   - ObjectiveSugar (0.9)
-  - SimpleSyncService (1.0):
+  - SimpleSyncService (1.0.0):
     - ObjectiveRecord
 
 DEPENDENCIES:
@@ -41,6 +41,6 @@ SPEC CHECKSUMS:
   Kiwi: 04c51e880831d291748ec702d42c4101f7eb95c9
   ObjectiveRecord: 109a6c583284c2c9af1dc0d6ccc1dfc84e826c45
   ObjectiveSugar: 81337e36790b5a157ee6ccdcf65c91393ca5d900
-  SimpleSyncService: a32c3c44c53e5c662baa60647e864508c4bb8f68
+  SimpleSyncService: f48ca0dc3446603b5b77e8aa80c43d2bddb98d02
 
 COCOAPODS: 0.28.0
