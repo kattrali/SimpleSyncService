@@ -10,7 +10,7 @@ spec:
 	$(BUILD_TOOL) $(DEFAULT_BUILD_ARGS) test
 
 install:
-	gem install cocoapods
+	gem install cocoapods --no-ri --no-rdoc
 	pod install
 
 ci: clean spec
