@@ -22,13 +22,6 @@ void synchronizeData(NSArray *data) {
 SPEC_BEGIN(SimpleSyncServiceTests)
 
 describe(@"simple service", ^{
-    beforeAll(^{
-        [[CoreDataManager sharedManager] useInMemoryStore];
-    });
-
-    afterEach(^{
-        [Person deleteAll];
-    });
 
     __block NSDictionary *samplePersonData = @{@"name": @"Delisa Mason",
                                                @"email": @"delisa@example.com",
@@ -36,23 +29,66 @@ describe(@"simple service", ^{
     __block NSDictionary *updatedPersonData = @{@"email": samplePersonData[@"email"],
                                                 @"number_of_cats":@2};
 
+    beforeAll(^{
+        [[CoreDataManager sharedManager] useInMemoryStore];
+    });
+
+    beforeEach(^{
+        synchronizeData(@[samplePersonData]);
+    });
+
+    afterEach(^{
+        [Person deleteAll];
+    });
+
     describe(@"sync", ^{
-        it(@"inserts new records", ^{
-            synchronizeData(@[samplePersonData]);
-            [[[Person where:@{@"name":@"Delisa Mason"}] should] haveCountOf:1];
+        describe(@"inserting", ^{
+            it(@"inserts new records", ^{
+                [[[Person where:@{@"name":@"Delisa Mason"}] should] haveCountOf:1];
+            });
+
+            it(@"inserts new records based on a property name", ^{
+                NSDictionary *otherPersonData = @{@"name": @"Delisa Mason",
+                                                  @"email": @"other_email@example.com",
+                                                  @"number_of_cats":@0};
+                synchronizeData(@[otherPersonData]);
+                [[[Person all] should] haveCountOf:2];
+            });
         });
 
-        it(@"matches existing records to new data using a property name", ^{
-            [Person create:samplePersonData];
-            synchronizeData(@[updatedPersonData]);
-            [[[Person all] should] haveCountOf:1];
+        describe(@"updating", ^{
+            it(@"matches existing records to new data using a property name", ^{
+                synchronizeData(@[updatedPersonData]);
+                [[[Person all] should] haveCountOf:1];
+            });
+
+            it(@"updates existing records with new data", ^{
+                synchronizeData(@[updatedPersonData]);
+                Person *delisa = [[Person where:@{@"email":samplePersonData[@"email"]}] firstObject];
+                [[delisa.numberOfCats should] equal:theValue(2)];
+            });
         });
 
-        it(@"updates existing records with new data", ^{
-            [Person create:samplePersonData];
-            synchronizeData(@[updatedPersonData]);
-            Person *delisa = [[Person where:@{@"email":samplePersonData[@"email"]}] firstObject];
-            [[delisa.numberOfCats should] equal:theValue(2)];
+        describe(@"error handling", ^{
+            it(@"skips synchronizing data without a valid ID property", ^{
+                NSDictionary *invalidData = @{@"name": @"Delisa Mason",
+                                              @"number_of_cats":@5};
+                synchronizeData(@[invalidData]);
+                NSArray *people = [Person where:@{@"name":@"Delisa Mason"}];
+                Person *delisa = [people firstObject];
+                [[people should] haveCountOf:1];
+                [[delisa.numberOfCats should] equal:theValue(0)];
+            });
+
+            it(@"continues to process new data after some data contains an error", ^{
+                NSArray *updatedData = @[@{@"name": @"Delisa Mason",
+                                           @"number_of_cats":@5},
+                                         @{@"name": @"Shoes",
+                                           @"email": @"shoes@example.com",
+                                           @"number_of_cats":@0}];
+                synchronizeData(updatedData);
+                [[[Person all] should] haveCountOf:2];
+            });
         });
     });
 
