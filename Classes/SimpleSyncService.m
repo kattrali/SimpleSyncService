@@ -92,9 +92,14 @@ static SimpleSyncService * sharedServiceInstance;
     if (existingRecords) {
         for (int i = 0; i < updatedIdentifiers.count; i++) {
             id identifier = updatedIdentifiers[i];
-            NSManagedObject * record = [self recordInArray:existingRecords
-                                                 withValue:identifier
-                                                    forKey:identifierPropertyName];
+            if ([identifier isEqual:[NSNull null]]) {
+                NSLog(@"ERROR: No identifier property named '%@' found in updated data: %@", identifierPropertyName, data[i]);
+                continue;
+            }
+
+            NSManagedObject *record = [self recordInArray:existingRecords
+                                                withValue:identifier
+                                                   forKey:identifierPropertyName];
             if (!record) {
                 record = [NSEntityDescription insertNewObjectForEntityForName:entityName
                                                        inManagedObjectContext:context];
