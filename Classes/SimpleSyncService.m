@@ -84,8 +84,7 @@ static SimpleSyncService * sharedServiceInstance;
     NSError *error = nil;
     NSArray *updatedIdentifiers = [data valueForKey:identifierPropertyName];
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:entityName];
-    NSString *propertyFormat = [NSString stringWithFormat:@"%@ IN %%@", identifierPropertyName];
-    request.predicate = [NSPredicate predicateWithFormat:propertyFormat, updatedIdentifiers];
+    request.predicate = [NSPredicate predicateWithFormat:@"%K IN %@", identifierPropertyName, updatedIdentifiers];
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:identifierPropertyName ascending:YES]];
     NSArray *existingRecords = [context executeFetchRequest:request error:&error];
 
@@ -117,8 +116,7 @@ static SimpleSyncService * sharedServiceInstance;
 + (NSManagedObject *)recordInArray:(NSArray *)records
                          withValue:(id)value
                             forKey:(NSString *)key {
-    NSString *propertyFormat = [NSString stringWithFormat:@"%@ == %%@", key];
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:propertyFormat, value];
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K == %@", key, value];
     NSArray *matches = [records filteredArrayUsingPredicate:predicate];
 
     return [matches firstObject];
