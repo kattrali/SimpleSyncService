@@ -97,7 +97,7 @@ describe(@"simple service", ^{
         beforeEach(^{
             NSArray *adapters = @[[[PeopleAPISyncAdapter alloc] initWithInterval:0.75
                                                                       entityName:[Person entityName]
-                                                                      modelIDKey:@"email"]];
+                                                                      fetchedDataIDKey:@"email"]];
             SimpleSyncService *service = [[SimpleSyncService alloc] initWithAdapters:adapters
                                                                             useQueue:[[NSOperationQueue alloc] init]];
             [service start];

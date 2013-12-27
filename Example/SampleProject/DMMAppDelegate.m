@@ -40,10 +40,10 @@
 - (void)initializeSyncService {
     PeopleAPISyncAdapter *apiAdapter = [[PeopleAPISyncAdapter alloc] initWithInterval:5
                                                                            entityName:[Person entityName]
-                                                                           modelIDKey:@"email"];
+                                                                           fetchedDataIDKey:@"email"];
     AddressBookSyncAdapter *contactAdapter = [[AddressBookSyncAdapter alloc] initWithInterval:10
                                                                                    entityName:[Person entityName]
-                                                                                   modelIDKey:@"email"];
+                                                                                   fetchedDataIDKey:@"email"];
     self.syncService = [[SimpleSyncService alloc] initWithAdapters:@[apiAdapter, contactAdapter]
                                                           useQueue:self.syncQueue];
 }

@@ -28,7 +28,7 @@
 
 @property (readwrite, nonatomic) NSTimeInterval interval;
 @property (readwrite, nonatomic, strong) NSString * entityName;
-@property (readwrite, nonatomic, strong) NSString * modelIDKey;
+@property (readwrite, nonatomic, strong) NSString * fetchedDataIDKey;
 
 @end
 
@@ -36,11 +36,11 @@
 
 - (id)initWithInterval:(NSTimeInterval)seconds
             entityName:(NSString *)entityName
-            modelIDKey:(NSString *)modelIDKey {
+      fetchedDataIDKey:(NSString *)fetchedDataIDKey {
     if (self = [super init]) {
         _interval = seconds;
         _entityName = entityName;
-        _modelIDKey = modelIDKey;
+        _fetchedDataIDKey = fetchedDataIDKey;
     }
 
     return self;

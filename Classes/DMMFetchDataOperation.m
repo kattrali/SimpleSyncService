@@ -48,7 +48,7 @@
 
 - (void)main {
     __block NSString *entityName = self.adapter.entityName;
-    __block NSString *modelIdentifier = self.adapter.modelIDKey;
+    __block NSString *modelIdentifier = self.adapter.fetchedDataIDKey;
 
     [self.adapter fetchDataWithCompletion:^(NSArray *fetchedData, NSError *error) {
         NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];

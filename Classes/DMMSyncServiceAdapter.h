@@ -28,20 +28,22 @@ typedef void (^SyncCompletionBlock)(NSArray *fetchedData, NSError *error);
 
 @property (readonly, nonatomic) NSTimeInterval interval;
 @property (readonly, nonatomic, strong) NSString *entityName;
-@property (readonly, nonatomic, strong) NSString *modelIDKey;
+@property (readonly, nonatomic, strong) NSString *fetchedDataIDKey;
 
 /**
  Create a new synchronization adapter
  @param interval time interval in seconds at which the adapter should 
  be triggered
  @param entityName the entity name of the Core Data model to be updated
- @param modelIDKey the name of a property by which fetched data and Core
- Data entity objects can be determined to be the same record
- synched by this adapter
+ @param fetchedDataIDKey the name of a key on each of the fetched data 
+ dictionary objects uniquely identifying it in the array. The key is
+ translated into a property name on the corresponding Core Data model using
+ ObjectiveRecord's mappings feature.
+ @see ObjectiveRecord/NSManagedObject+Mappings.h
  */
 - (id)initWithInterval:(NSTimeInterval)seconds
             entityName:(NSString *)entityName
-            modelIDKey:(NSString *)modelIDKey;
+      fetchedDataIDKey:(NSString *)fetchedDataIDKey;
 
 /**
  Data fetching method invoked by the synchronization service. Once the 
