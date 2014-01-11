@@ -19,10 +19,26 @@ void synchronizeData(NSArray *data) {
                    withIdentifierNamed:@"email"];
 }
 
+void synchronizeDataInBackground(NSArray *data, NSOperationQueue *queue) {
+    [SimpleSyncService synchronizeData:data
+                        withEntityName:[Person entityName]
+                   withIdentifierNamed:@"email"
+                              useQueue:queue];
+}
+
+void returnDataFromAPI(NSArray *data) {
+    [PeopleAPI stub:@selector(fetchUpdatedDataWithCompletionBlock:) withBlock:^id(NSArray *params) {
+        SyncCompletionBlock block = [params firstObject];
+        block(data, nil);
+        return nil;
+    }];
+}
+
 SPEC_BEGIN(SimpleSyncServiceTests)
 
 describe(@"simple service", ^{
 
+    NSInteger (^numberOfPeople)(void) = ^NSInteger{ return [[Person all] count]; };
     __block NSDictionary *samplePersonData = @{@"name": @"Delisa Mason",
                                                @"email": @"delisa@example.com",
                                                @"number_of_cats":@0};
@@ -43,23 +59,23 @@ describe(@"simple service", ^{
 
     describe(@"sync", ^{
         describe(@"inserting", ^{
+            NSDictionary *otherPersonData = @{@"name": @"Delisa Mason",
+                                              @"email": @"other_email@example.com",
+                                              @"number_of_cats":@0};
+
             it(@"inserts new records", ^{
                 [[[Person where:@{@"name":@"Delisa Mason"}] should] haveCountOf:1];
             });
 
             it(@"inserts new records based on a property name", ^{
-                NSDictionary *otherPersonData = @{@"name": @"Delisa Mason",
-                                                  @"email": @"other_email@example.com",
-                                                  @"number_of_cats":@0};
-                synchronizeData(@[otherPersonData]);
-                [[[Person all] should] haveCountOf:2];
+                [[theBlock(^{ synchronizeData(@[otherPersonData]); }) should] change:numberOfPeople by:+1];
             });
         });
 
         describe(@"updating", ^{
             it(@"matches existing records to new data using a property name", ^{
                 synchronizeData(@[updatedPersonData]);
-                [[[Person all] should] haveCountOf:1];
+                [[theBlock(^{ synchronizeData(@[updatedPersonData]); }) shouldNot] change:numberOfPeople];
             });
 
             it(@"updates existing records with new data", ^{
@@ -70,24 +86,29 @@ describe(@"simple service", ^{
         });
 
         describe(@"error handling", ^{
-            it(@"skips synchronizing data without a valid ID property", ^{
-                NSDictionary *invalidData = @{@"name": @"Delisa Mason",
-                                              @"number_of_cats":@5};
-                synchronizeData(@[invalidData]);
-                NSArray *people = [Person where:@{@"name":@"Delisa Mason"}];
-                Person *delisa = [people firstObject];
-                [[people should] haveCountOf:1];
-                [[delisa.numberOfCats should] equal:theValue(0)];
+            context(@"data does not contain a valid ID property", ^{
+                NSDictionary *invalidData = @{@"name": @"Delisa Mason", @"number_of_cats":@5};
+
+                it(@"does not insert new records", ^{
+                    [[theBlock(^{ synchronizeData(@[invalidData]); }) shouldNot] change:numberOfPeople];
+                });
+
+                it(@"skips synchronizing data without a valid ID property", ^{
+                    [[theBlock(^{ synchronizeData(@[invalidData]); }) shouldNot] change:^NSInteger{
+                        NSArray *people = [Person where:@{@"name":@"Delisa Mason"}];
+                        Person  *delisa = [people firstObject];
+                        return [delisa.numberOfCats integerValue];
+                    }];
+                });
             });
 
-            it(@"continues to process new data after some data contains an error", ^{
-                NSArray *updatedData = @[@{@"name": @"Delisa Mason",
-                                           @"number_of_cats":@5},
-                                         @{@"name": @"Shoes",
-                                           @"email": @"shoes@example.com",
-                                           @"number_of_cats":@0}];
-                synchronizeData(updatedData);
-                [[[Person all] should] haveCountOf:2];
+            context(@"some data is valid and some contains errors", ^{
+                NSArray *updatedData = @[@{@"name": @"Delisa Mason", @"number_of_cats":@5},
+                                         @{@"name": @"Shoes", @"email": @"shoes@example.com", @"number_of_cats":@0}];
+
+                it(@"continues to process new data after some data contains an error", ^{
+                    [[theBlock(^{ synchronizeData(updatedData); }) should] change:numberOfPeople by:+1];
+                });
             });
         });
     });
@@ -95,34 +116,20 @@ describe(@"simple service", ^{
     describe(@"scheduling with adapters", ^{
 
         beforeEach(^{
-            NSArray *adapters = @[[[PeopleAPISyncAdapter alloc] initWithInterval:0.75
-                                                                      entityName:[Person entityName]
-                                                                      fetchedDataIDKey:@"email"]];
-            SimpleSyncService *service = [[SimpleSyncService alloc] initWithAdapters:adapters
-                                                                            useQueue:[[NSOperationQueue alloc] init]];
+            NSArray *adapters = @[[[PeopleAPISyncAdapter alloc] initWithInterval:0.75 entityName:[Person entityName] fetchedDataIDKey:@"email"]];
+            SimpleSyncService *service = [[SimpleSyncService alloc] initWithAdapters:adapters useQueue:[[NSOperationQueue alloc] init]];
             [service start];
         });
         
         it(@"inserts new records", ^{
-            [PeopleAPI stub:@selector(fetchUpdatedDataWithCompletionBlock:)
-                  withBlock:^id(NSArray *params) {
-                      SyncCompletionBlock block = [params firstObject];
-                      block(@[samplePersonData], nil);
-                      return nil;
-                  }];
+            returnDataFromAPI(@[samplePersonData]);
             [[expectFutureValue([Person where:@{@"name":@"Delisa Mason"}]) shouldEventually] haveCountOf:1];
         });
 
         it(@"updates existing records", ^{
             synchronizeData(@[samplePersonData]);
-            [PeopleAPI stub:@selector(fetchUpdatedDataWithCompletionBlock:)
-                  withBlock:^id(NSArray *params) {
-                      SyncCompletionBlock block = [params firstObject];
-                      block(@[updatedPersonData], nil);
-                      return nil;
-                  }];
-
-            [[expectFutureValue([((Person *)[[Person where:@{@"name":@"Delisa Mason"}] firstObject]) numberOfCats]) shouldEventually] equal:theValue(2)];
+            returnDataFromAPI(@[updatedPersonData]);
+            [[expectFutureValue([((Person *)[[Person where:@{@"name":@"Delisa Mason"}] firstObject]) numberOfCats]) shouldEventually] equal:@2];
         });
     });
 });
