@@ -1,5 +1,5 @@
 //
-//  DMMFetchDataOperation.h
+//  DMMSyncDataOperation.h
 //  SimpleSyncService
 //
 //  Copyright (c) 2013 Delisa Mason. http://delisa.me
@@ -22,10 +22,9 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 
-#import "DMMSyncServiceAdapter.h"
+#import <Foundation/Foundation.h>
 
-@interface DMMFetchDataOperation : NSOperation
+@interface DMMSyncDataOperation : NSOperation
 
-- (id)initWithSyncAdapter:(DMMSyncServiceAdapter *)adapter;
-
+- (id)initWithData:(NSArray *)data entityName:(NSString *)entityName identifier:(NSString *)identifierPropertyName ;
 @end

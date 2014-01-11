@@ -25,6 +25,7 @@
 #import "SimpleSyncService.h"
 #import "DMMSyncServiceAdapter.h"
 #import "DMMFetchDataOperation.h"
+#import "DMMSyncDataOperation.h"
 #import <ObjectiveRecord/ObjectiveRecord.h>
 
 static SimpleSyncService * sharedServiceInstance;
@@ -34,13 +35,11 @@ static SimpleSyncService * sharedServiceInstance;
 @property (nonatomic, strong) NSArray * adapters;
 @property (nonatomic, strong) NSMutableArray * adapterTimers;
 @property (nonatomic) NSOperationQueue * queue;
-
 @end
 
 @implementation SimpleSyncService
 
-- (id)initWithAdapters:(NSArray *)adapters
-              useQueue:(NSOperationQueue *)queue {
+- (id)initWithAdapters:(NSArray *)adapters useQueue:(NSOperationQueue *)queue {
     if (self = [super init]) {
         _adapters = adapters;
         _queue    = queue;
@@ -73,6 +72,13 @@ static SimpleSyncService * sharedServiceInstance;
     DMMSyncServiceAdapter * adapter = (DMMSyncServiceAdapter *)timer.userInfo;
     DMMFetchDataOperation * operation = [[DMMFetchDataOperation alloc] initWithSyncAdapter:adapter];
     [self.queue addOperation:operation];
+}
+
++ (void)synchronizeData:(NSArray *)data
+         withEntityName:(NSString *)entityName
+    withIdentifierNamed:(NSString *)identifierPropertyName
+               useQueue:(NSOperationQueue *)queue {
+    [queue addOperation:[[DMMSyncDataOperation alloc] initWithData:data entityName:entityName identifier:identifierPropertyName]];
 }
 
 + (BOOL)synchronizeData:(NSArray *)data
@@ -113,12 +119,9 @@ static SimpleSyncService * sharedServiceInstance;
     return YES;
 }
 
-+ (NSManagedObject *)recordInArray:(NSArray *)records
-                         withValue:(id)value
-                            forKey:(NSString *)key {
++ (NSManagedObject *)recordInArray:(NSArray *)records withValue:(id)value forKey:(NSString *)key {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K == %@", key, value];
     NSArray *matches = [records filteredArrayUsingPredicate:predicate];
-
     return [matches firstObject];
 }
 
@@ -127,7 +130,6 @@ static SimpleSyncService * sharedServiceInstance;
 
     NSError *error = nil;
     BOOL success = [context save:&error];
-
     if (success) {
         NSManagedObjectContext *parent = context.parentContext;
         if (parent) {

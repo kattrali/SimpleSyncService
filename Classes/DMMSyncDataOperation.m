@@ -1,5 +1,5 @@
 //
-//  DMMFetchDataOperation.m
+//  DMMSyncDataOperation.m
 //  SimpleSyncService
 //
 //  Copyright (c) 2013 Delisa Mason. http://delisa.me
@@ -22,41 +22,39 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 //  IN THE SOFTWARE.
 
-#import "DMMFetchDataOperation.h"
+#import "DMMSyncDataOperation.h"
 #import "SimpleSyncService.h"
 #import <ObjectiveRecord/ObjectiveRecord.h>
 
-@interface DMMFetchDataOperation()
+@interface DMMSyncDataOperation ()
 
-@property (nonatomic, strong) DMMSyncServiceAdapter *adapter;
+@property (nonatomic, strong) NSArray * fetchedData;
+@property (nonatomic, strong) NSString * entityName;
+@property (nonatomic, strong) NSString * propertyName;
 @end
 
-@implementation DMMFetchDataOperation
+@implementation DMMSyncDataOperation
 
-- (id)initWithSyncAdapter:(DMMSyncServiceAdapter *)adapter {
+- (id)initWithData:(NSArray *)data entityName:(NSString *)entityName identifier:(NSString *)identifierPropertyName {
     if (self = [super init]) {
-        _adapter = adapter;
+        _fetchedData  = data;
+        _entityName   = entityName;
+        _propertyName = identifierPropertyName;
     }
-
     return self;
 }
 
-- (BOOL)isConcurrent {
-    return NO;
+- (void)main {
+    [SimpleSyncService synchronizeData:self.fetchedData
+                        withEntityName:self.entityName
+                             inContext:self.confinedContext
+                   withIdentifierNamed:self.propertyName];
 }
 
-- (void)main {
-    __block NSString *entityName = self.adapter.entityName;
-    __block NSString *modelIdentifier = self.adapter.fetchedDataIDKey;
-    [self.adapter fetchDataWithCompletion:^(NSArray *fetchedData, NSError *error) {
-        NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-        context.parentContext = [[CoreDataManager sharedManager] managedObjectContext];
-
-        [SimpleSyncService synchronizeData:fetchedData
-                            withEntityName:entityName
-                                 inContext:context
-                       withIdentifierNamed:modelIdentifier];
-    }];
+- (NSManagedObjectContext *)confinedContext {
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
+    context.parentContext = [[CoreDataManager sharedManager] managedObjectContext];
+    return context;
 }
 
 @end
