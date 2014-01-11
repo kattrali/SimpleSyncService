@@ -74,14 +74,13 @@ describe(@"simple service", ^{
 
         describe(@"updating", ^{
             it(@"matches existing records to new data using a property name", ^{
-                synchronizeData(@[updatedPersonData]);
                 [[theBlock(^{ synchronizeData(@[updatedPersonData]); }) shouldNot] change:numberOfPeople];
             });
 
             it(@"updates existing records with new data", ^{
                 synchronizeData(@[updatedPersonData]);
                 Person *delisa = [[Person where:@{@"email":samplePersonData[@"email"]}] firstObject];
-                [[delisa.numberOfCats should] equal:theValue(2)];
+                [[delisa.numberOfCats should] equal:@2];
             });
         });
 

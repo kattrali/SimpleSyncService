@@ -23,24 +23,24 @@ PODS:
   - ObjectiveRecord (1.4.0):
     - ObjectiveSugar
   - ObjectiveSugar (0.9)
-  - SimpleSyncService (1.0.0):
+  - SimpleSyncService (1.1.0):
     - ObjectiveRecord
 
 DEPENDENCIES:
   - AFNetworking
   - Kiwi/XCTest
   - ObjectiveSugar
-  - SimpleSyncService (from `../SimpleSyncService.podspec`)
+  - SimpleSyncService (from `../`)
 
 EXTERNAL SOURCES:
   SimpleSyncService:
-    :path: ../SimpleSyncService.podspec
+    :path: ../
 
 SPEC CHECKSUMS:
   AFNetworking: e499052cbf3d743e9bb727bb37adb9dc2547ba15
   Kiwi: 04c51e880831d291748ec702d42c4101f7eb95c9
   ObjectiveRecord: 109a6c583284c2c9af1dc0d6ccc1dfc84e826c45
   ObjectiveSugar: 81337e36790b5a157ee6ccdcf65c91393ca5d900
-  SimpleSyncService: f48ca0dc3446603b5b77e8aa80c43d2bddb98d02
+  SimpleSyncService: fde14c52e83c42a8fa2f09be534e0b9075445212
 
-COCOAPODS: 0.28.0
+COCOAPODS: 0.29.0
