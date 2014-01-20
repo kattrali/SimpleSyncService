@@ -132,13 +132,8 @@ static SimpleSyncService * sharedServiceInstance;
     BOOL success = [context save:&error];
     if (success) {
         NSManagedObjectContext *parent = context.parentContext;
-        if (parent) {
-            NSError * propagation = nil;
-            [parent save:&propagation];
-            if (propagation) {
-                NSLog(@"ERROR: Synchronization Service failed to propagate changes to main context: %@", error.localizedDescription);
-            }
-        }
+        if (parent)
+            return [self saveContext:parent];
     } else {
         NSLog(@"ERROR: Synchronization Service save failed: %@", error.localizedDescription);
     }
