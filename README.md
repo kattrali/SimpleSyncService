@@ -1,6 +1,6 @@
 # SimpleSyncService [![Build Status](https://travis-ci.org/kattrali/SimpleSyncService.png?branch=master)](https://travis-ci.org/kattrali/SimpleSyncService)
 
-A simple, customizable service for updating Core Data models. It uses [ObjectiveRecord](https://github.com/mneorr/ObjectiveRecord) for mapping data in dictionary format to a Core Data entity's properties.
+A simple, customizable service for updating Core Data models. It uses [ObjectiveRecord](https://github.com/supermarin/ObjectiveRecord) for mapping data in dictionary format to a Core Data entity's properties.
 
 
 ## Usage
@@ -20,8 +20,16 @@ After fetching new data with which to update and insert new model instances, inv
                              inContext:managedObjectContext
                    withIdentifierNamed:@"remoteID"];
 
+When the property key in the data differs from the model property name, it can be specified like so:
 
-The identifier property is used to determine whether an existing record should be updated or a new record should be inserted.
+    [SimpleSyncService synchronizeData:arrayOfUpdatedModelData
+                        withEntityName:modelEntityName
+                             inContext:managedObjectContext
+               withDataIdentifierNamed:@"email"
+               andModelIdentifierNamed:@"emailAddress"];
+
+
+The identifier properties are used to determine whether an existing record should be updated or a new record should be inserted.
 
 ### Automatic
 
