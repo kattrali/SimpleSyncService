@@ -68,6 +68,24 @@
  data in dictionaries
  @param data an NSArray of NSDictionary instances
  @param entityName the name of the entity model to be synchronized
+ @param context an NSManagedObjectContext on which Core Data tasks should
+ be performed
+ @param dataPropertyName a property name with corresponding unique
+ values in the data array objects
+ @param modelPropertyName a property name with corresponding unique
+ values in the core data model
+ */
++ (BOOL)synchronizeData:(NSArray *)data
+         withEntityName:(NSString *)entityName
+              inContext:(NSManagedObjectContext *)context
+withDataIdentifierNamed:(NSString *)dataPropertyName
+andModelIdentifierNamed:(NSString *)modelPropertyName;
+
+/**
+ Synchronize Core Data entity instances with an array of updated model
+ data in dictionaries
+ @param data an NSArray of NSDictionary instances
+ @param entityName the name of the entity model to be synchronized
  @param identifierPropertyName a property name with corresponding unique
  values in the data array objects and the core data model
  @param queue a queue on which the service should run Core Data operations.
@@ -77,4 +95,23 @@
          withEntityName:(NSString *)entityName
     withIdentifierNamed:(NSString *)identifierPropertyName
                useQueue:(NSOperationQueue *)queue;
+
+/**
+ Synchronize Core Data entity instances with an array of updated model
+ data in dictionaries
+ @param data an NSArray of NSDictionary instances
+ @param entityName the name of the entity model to be synchronized
+ @param dataPropertyName a property name with corresponding unique
+ values in the data array objects
+ @param modelPropertyName a property name with corresponding unique
+ values in the core data model
+ @param queue a queue on which the service should run Core Data operations.
+ When nil, the service will use the main queue.
+ */
++ (void)synchronizeData:(NSArray *)data
+         withEntityName:(NSString *)entityName
+withDataIdentifierNamed:(NSString *)dataPropertyName
+andModelIdentifierNamed:(NSString *)modelPropertyName
+               useQueue:(NSOperationQueue*)queue;
+
 @end

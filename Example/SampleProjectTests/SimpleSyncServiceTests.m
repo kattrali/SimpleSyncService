@@ -11,7 +11,7 @@
 #import "PeopleAPI.h"
 #import "PeopleAPISyncAdapter.h"
 
-void synchronizeData(NSArray *data) {
+static void synchronizeData(NSArray *data) {
     NSManagedObjectContext *context = [[CoreDataManager sharedManager] managedObjectContext];
     [SimpleSyncService synchronizeData:data
                         withEntityName:[Person entityName]
@@ -19,14 +19,16 @@ void synchronizeData(NSArray *data) {
                    withIdentifierNamed:@"email"];
 }
 
-void synchronizeDataInBackground(NSArray *data, NSOperationQueue *queue) {
+static void synchronizeComplexData(NSArray *data) {
+    NSManagedObjectContext *context = [[CoreDataManager sharedManager] managedObjectContext];
     [SimpleSyncService synchronizeData:data
                         withEntityName:[Person entityName]
-                   withIdentifierNamed:@"email"
-                              useQueue:queue];
+                             inContext:context
+               withDataIdentifierNamed:@"address"
+               andModelIdentifierNamed:@"email"];
 }
 
-void returnDataFromAPI(NSArray *data) {
+static void returnDataFromAPI(NSArray *data) {
     [PeopleAPI stub:@selector(fetchUpdatedDataWithCompletionBlock:) withBlock:^id(NSArray *params) {
         SyncCompletionBlock block = [params firstObject];
         block(data, nil);
@@ -39,25 +41,27 @@ SPEC_BEGIN(SimpleSyncServiceTests)
 describe(@"simple service", ^{
 
     NSInteger (^numberOfPeople)(void) = ^NSInteger{ return [[Person all] count]; };
-    __block NSDictionary *samplePersonData = @{@"name": @"Delisa Mason",
-                                               @"email": @"delisa@example.com",
-                                               @"number_of_cats":@0};
-    __block NSDictionary *updatedPersonData = @{@"email": samplePersonData[@"email"],
-                                                @"number_of_cats":@2};
 
     beforeAll(^{
         [[CoreDataManager sharedManager] useInMemoryStore];
-    });
-
-    beforeEach(^{
-        synchronizeData(@[samplePersonData]);
     });
 
     afterEach(^{
         [Person deleteAll];
     });
 
-    describe(@"sync", ^{
+    describe(@"single-property sync", ^{
+
+        __block NSDictionary *samplePersonData = @{@"name": @"Delisa Mason",
+                                                   @"email": @"delisa@example.com",
+                                                   @"number_of_cats":@0};
+        __block NSDictionary *updatedPersonData = @{@"email": samplePersonData[@"email"],
+                                                    @"number_of_cats":@2};
+
+        beforeEach(^{
+            synchronizeData(@[samplePersonData]);
+        });
+
         describe(@"inserting", ^{
             NSDictionary *otherPersonData = @{@"name": @"Delisa Mason",
                                               @"email": @"other_email@example.com",
@@ -110,25 +114,65 @@ describe(@"simple service", ^{
                 });
             });
         });
+
+        describe(@"scheduling with adapters", ^{
+
+            beforeEach(^{
+                synchronizeData(@[samplePersonData]);
+                NSArray *adapters = @[[[PeopleAPISyncAdapter alloc] initWithInterval:0.75 entityName:[Person entityName] fetchedDataIDKey:@"email"]];
+                SimpleSyncService *service = [[SimpleSyncService alloc] initWithAdapters:adapters useQueue:[[NSOperationQueue alloc] init]];
+                [service start];
+            });
+
+            it(@"inserts new records", ^{
+                returnDataFromAPI(@[samplePersonData]);
+                [[expectFutureValue([Person where:@{@"name":@"Delisa Mason"}]) shouldEventually] haveCountOf:1];
+            });
+
+            it(@"updates existing records", ^{
+                synchronizeData(@[samplePersonData]);
+                returnDataFromAPI(@[updatedPersonData]);
+                [[expectFutureValue([((Person *)[[Person where:@{@"name":@"Delisa Mason"}] firstObject]) numberOfCats]) shouldEventually] equal:@2];
+            });
+        });
     });
 
-    describe(@"scheduling with adapters", ^{
+    describe(@"multiple-property sync", ^{
+
+        __block NSDictionary *samplePersonData = @{@"name": @"Delisa Mason",
+                                                   @"address": @"delisa@example.com",
+                                                   @"number_of_cats":@0};
+        __block NSDictionary *updatedPersonData = @{@"address": samplePersonData[@"address"],
+                                                    @"number_of_cats":@2};
 
         beforeEach(^{
-            NSArray *adapters = @[[[PeopleAPISyncAdapter alloc] initWithInterval:0.75 entityName:[Person entityName] fetchedDataIDKey:@"email"]];
-            SimpleSyncService *service = [[SimpleSyncService alloc] initWithAdapters:adapters useQueue:[[NSOperationQueue alloc] init]];
-            [service start];
-        });
-        
-        it(@"inserts new records", ^{
-            returnDataFromAPI(@[samplePersonData]);
-            [[expectFutureValue([Person where:@{@"name":@"Delisa Mason"}]) shouldEventually] haveCountOf:1];
+            synchronizeComplexData(@[samplePersonData]);
         });
 
-        it(@"updates existing records", ^{
-            synchronizeData(@[samplePersonData]);
-            returnDataFromAPI(@[updatedPersonData]);
-            [[expectFutureValue([((Person *)[[Person where:@{@"name":@"Delisa Mason"}] firstObject]) numberOfCats]) shouldEventually] equal:@2];
+        describe(@"inserting", ^{
+            NSDictionary *otherPersonData = @{@"name": @"Delisa Mason",
+                                              @"address": @"other_email@example.com",
+                                              @"number_of_cats":@0};
+
+            it(@"inserts new records", ^{
+                [[[Person where:@{@"email":@"delisa@example.com"}] should] haveCountOf:1];
+            });
+
+            it(@"inserts new records based on a property name", ^{
+                [[theBlock(^{ synchronizeComplexData(@[otherPersonData]); }) should] change:numberOfPeople by:+1];
+            });
+        });
+
+        describe(@"updating", ^{
+            it(@"matches existing records to new data using a property name", ^{
+                [[theBlock(^{ synchronizeComplexData(@[updatedPersonData]); }) shouldNot] change:numberOfPeople];
+            });
+
+            it(@"updates existing records with new data", ^{
+                synchronizeComplexData(@[updatedPersonData]);
+                Person *delisa = [[Person where:@{@"email":samplePersonData[@"address"]}] firstObject];
+                [[delisa.numberOfCats should] equal:@2];
+            });
         });
     });
 });

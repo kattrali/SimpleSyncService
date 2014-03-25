@@ -94,35 +94,55 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
     [queue addOperation:operation];
 }
 
++ (void)synchronizeData:(NSArray *)data
+         withEntityName:(NSString *)entityName
+withDataIdentifierNamed:(NSString *)dataPropertyName
+andModelIdentifierNamed:(NSString *)modelPropertyName
+               useQueue:(NSOperationQueue *)queue {
+    NSBlockOperation *operation = [[NSBlockOperation alloc] init];
+    [operation addExecutionBlock:^{
+        syncData(data, entityName, dataPropertyName, modelPropertyName);
+    }];
+    [queue addOperation:operation];
+}
+
 + (BOOL)synchronizeData:(NSArray *)data
          withEntityName:(NSString *)entityName
               inContext:(NSManagedObjectContext *)context
     withIdentifierNamed:(NSString *)identifierPropertyName {
+    return [self synchronizeData:data withEntityName:entityName inContext:context withDataIdentifierNamed:identifierPropertyName andModelIdentifierNamed:identifierPropertyName];
+}
+
++ (BOOL)synchronizeData:(NSArray *)data
+         withEntityName:(NSString *)entityName
+              inContext:(NSManagedObjectContext *)context
+withDataIdentifierNamed:(NSString *)dataPropertyName
+andModelIdentifierNamed:(NSString *)modelPropertyName {
     if (data.count == 0) return YES;
 
     NSError *error = nil;
-    NSArray *updatedIdentifiers = [data valueForKey:identifierPropertyName];
+    NSArray *updatedIdentifiers = [data valueForKey:dataPropertyName];
     NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:entityName];
-    request.predicate = [NSPredicate predicateWithFormat:@"%K IN %@", identifierPropertyName, updatedIdentifiers];
-    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:identifierPropertyName ascending:YES]];
+    request.predicate = [NSPredicate predicateWithFormat:@"%K IN %@", modelPropertyName, updatedIdentifiers];
+    request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:modelPropertyName ascending:YES]];
     NSArray *existingRecords = [context executeFetchRequest:request error:&error];
 
     if (existingRecords) {
         for (int i = 0; i < updatedIdentifiers.count; i++) {
             id identifier = updatedIdentifiers[i];
             if ([identifier isEqual:[NSNull null]]) {
-                NSLog(@"ERROR: No identifier property named '%@' found in updated data: %@", identifierPropertyName, data[i]);
+                NSLog(@"ERROR: No identifier property named '%@' found in updated data: %@", dataPropertyName, data[i]);
                 continue;
             }
 
             NSManagedObject *record = [self recordInArray:existingRecords
                                                 withValue:identifier
-                                                   forKey:identifierPropertyName];
+                                                   forKey:modelPropertyName];
             if (!record) {
                 record = [NSEntityDescription insertNewObjectForEntityForName:entityName
                                                        inManagedObjectContext:context];
             }
-            [record update:data[i]];
+            [record update:[self dictionary:data[i] replacingKey:dataPropertyName withKey:modelPropertyName]];
         }
         return [self saveContext:context];
     } else if (error) {
@@ -145,12 +165,27 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
     BOOL success = [context save:&error];
     if (success) {
         NSManagedObjectContext *parent = context.parentContext;
-        if (parent)
-            return [self saveContext:parent];
+        if (parent) {
+            NSError * propagation = nil;
+            [parent save:&propagation];
+            if (propagation) {
+                NSLog(@"ERROR: Synchronization Service failed to propagate changes to main context: %@", error.localizedDescription);
+            }
+        }
     } else {
         NSLog(@"ERROR: Synchronization Service save failed: %@", error.localizedDescription);
     }
     return success;
+}
+
++ (NSDictionary *)dictionary:(NSDictionary *)data replacingKey:(NSString *)oldKey withKey:(NSString *)newKey {
+    if ([oldKey isEqualTo:newKey])
+        return data;
+
+    NSMutableDictionary *dict = data.mutableCopy;
+    dict[newKey] = dict[oldKey];
+    [dict removeObjectForKey:oldKey];
+    return dict;
 }
 
 @end
