@@ -179,7 +179,7 @@ andModelIdentifierNamed:(NSString *)modelPropertyName {
 }
 
 + (NSDictionary *)dictionary:(NSDictionary *)data replacingKey:(NSString *)oldKey withKey:(NSString *)newKey {
-    if ([oldKey isEqualTo:newKey])
+    if ([oldKey isEqualToString:newKey])
         return data;
 
     NSMutableDictionary *dict = data.mutableCopy;
