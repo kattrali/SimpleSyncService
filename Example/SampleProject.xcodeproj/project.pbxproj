@@ -67,7 +67,7 @@
 		8A26F708184595EA00AFE070 /* Person.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Person.m; sourceTree = "<group>"; };
 		8A26F70A1847150300AFE070 /* PeopleAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PeopleAPI.h; sourceTree = "<group>"; };
 		8A26F70B1847150300AFE070 /* PeopleAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeopleAPI.m; sourceTree = "<group>"; };
-		8A26F70E1847253300AFE070 /* SimpleSyncServiceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleSyncServiceTests.m; sourceTree = "<group>"; };
+		8A26F70E1847253300AFE070 /* SimpleSyncServiceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleSyncServiceTests.m; sourceTree = "<group>"; tabWidth = 4; };
 		8A26F7101847F76A00AFE070 /* AddressBookSyncAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressBookSyncAdapter.h; sourceTree = "<group>"; };
 		8A26F7111847F76A00AFE070 /* AddressBookSyncAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookSyncAdapter.m; sourceTree = "<group>"; };
 		8A26F7131847F85A00AFE070 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
