@@ -24,10 +24,27 @@
 
 typedef void (^SyncCompletionBlock)(NSArray *fetchedData, NSError *error);
 
+/**
+ A pluggable data fetch adapter intended to be triggered via periodic
+ data requests
+ */
 @interface DMMSyncServiceAdapter : NSObject
 
+/**
+ The interval at which this adapter should perform a fetch
+ */
 @property (readonly, nonatomic) NSTimeInterval interval;
+
+/**
+ The entity which should be updated with fetched data
+ */
 @property (readonly, nonatomic, strong) NSString *entityName;
+
+/**
+ The property contained by the entity and fetched data which should
+ be used to determine whether a fetched data object should be used to
+ update an existing record or create a new one.
+ */
 @property (readonly, nonatomic, strong) NSString *fetchedDataIDKey;
 
 /**
