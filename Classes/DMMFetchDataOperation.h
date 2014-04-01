@@ -26,6 +26,6 @@
 
 @interface DMMFetchDataOperation : NSOperation
 
-- (id)initWithSyncAdapter:(DMMSyncServiceAdapter *)adapter;
+- (instancetype)initWithSyncAdapter:(DMMSyncServiceAdapter *)adapter;
 
 @end
