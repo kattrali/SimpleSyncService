@@ -7,7 +7,7 @@ clean:
 	$(BUILD_TOOL) $(DEFAULT_BUILD_ARGS) clean | xcpretty -c
 
 spec:
-	$(BUILD_TOOL) $(DEFAULT_BUILD_ARGS) test | xcpretty -c
+	$(BUILD_TOOL) $(DEFAULT_BUILD_ARGS) test | xcpretty -c; exit ${PIPESTATUS[0]}
 
 install:
 	gem install cocoapods xcpretty --no-ri --no-rdoc
