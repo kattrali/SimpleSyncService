@@ -24,10 +24,9 @@
 
 #import "SimpleSyncService.h"
 #import "DMMSyncServiceAdapter.h"
-#import "DMMFetchDataOperation.h"
 #import <ObjectiveRecord/ObjectiveRecord.h>
 
-static SimpleSyncService * sharedServiceInstance;
+static SimpleSyncService *sharedServiceInstance;
 
 static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataPropertyName, NSString *modelPropertyName) {
     NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
@@ -78,8 +77,19 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
 }
 
 - (void)fireTimer:(NSTimer *)timer {
-    DMMSyncServiceAdapter * adapter = (DMMSyncServiceAdapter *)timer.userInfo;
-    DMMFetchDataOperation * operation = [[DMMFetchDataOperation alloc] initWithSyncAdapter:adapter];
+    DMMSyncServiceAdapter *adapter = (DMMSyncServiceAdapter *)timer.userInfo;
+    NSBlockOperation *operation = [[NSBlockOperation alloc] init];
+    [operation addExecutionBlock:^{
+        [adapter fetchDataWithCompletion:^(NSArray *fetchedData, NSError *error) {
+            NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+            context.parentContext = [[CoreDataManager sharedManager] managedObjectContext];
+
+            [SimpleSyncService synchronizeData:fetchedData
+                                withEntityName:adapter.entityName
+                                     inContext:context
+                           withIdentifierNamed:adapter.fetchedDataIDKey];
+        }];
+    }];
     [self.queue addOperation:operation];
 }
 
