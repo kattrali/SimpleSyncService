@@ -176,11 +176,12 @@ andModelIdentifierNamed:(NSString *)modelPropertyName {
     if (success) {
         NSManagedObjectContext *parent = context.parentContext;
         if (parent) {
-            NSError * propagation = nil;
-            [parent save:&propagation];
-            if (propagation) {
-                NSLog(@"ERROR: Synchronization Service failed to propagate changes to main context: %@", error.localizedDescription);
-            }
+            [parent performBlock:^{
+                NSError * propagation = nil;
+                [parent save:&propagation];
+                if (propagation)
+                    NSLog(@"ERROR: Synchronization Service failed to propagate changes to main context: %@", propagation.localizedDescription);
+            }];
         }
     } else {
         NSLog(@"ERROR: Synchronization Service save failed: %@", error.localizedDescription);
