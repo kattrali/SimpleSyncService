@@ -40,9 +40,9 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
 
 @interface SimpleSyncService ()
 
-@property (nonatomic, strong) NSArray * adapters;
-@property (nonatomic, strong) NSMutableArray * adapterTimers;
-@property (nonatomic) NSOperationQueue * queue;
+@property (nonatomic, strong) NSArray *adapters;
+@property (nonatomic, strong) NSMutableArray *adapterTimers;
+@property (nonatomic) NSOperationQueue *queue;
 @end
 
 @implementation SimpleSyncService
@@ -60,12 +60,12 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
 - (void)start {
     NSRunLoop *runner = [NSRunLoop currentRunLoop];
 
-    for (DMMSyncServiceAdapter * adapter in self.adapters) {
-        NSTimer * timer = [NSTimer timerWithTimeInterval:adapter.interval
-                                                  target:self
-                                                selector:@selector(fireTimer:)
-                                                userInfo:adapter
-                                                 repeats:YES];
+    for (DMMSyncServiceAdapter *adapter in self.adapters) {
+        NSTimer *timer = [NSTimer timerWithTimeInterval:adapter.interval
+                                                 target:self
+                                               selector:@selector(fireTimer:)
+                                               userInfo:adapter
+                                                repeats:YES];
         [runner addTimer:timer forMode:NSDefaultRunLoopMode];
         [self.adapterTimers addObject:timer];
     }
