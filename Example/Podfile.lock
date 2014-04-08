@@ -20,7 +20,7 @@ PODS:
   - Kiwi/XCTest (2.2.4):
     - Kiwi/ARC
     - Kiwi/NonARC
-  - ObjectiveRecord (1.4.0):
+  - ObjectiveRecord (1.5.0):
     - ObjectiveSugar
   - ObjectiveSugar (1.1.0)
   - SimpleSyncService (1.2.0):
@@ -39,7 +39,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AFNetworking: 0121f4b69be3fa58d1ab317866e036e12ac9651d
   Kiwi: d60d7498b640a16f58b01925fc3c8d7c4d809f66
-  ObjectiveRecord: 109a6c583284c2c9af1dc0d6ccc1dfc84e826c45
+  ObjectiveRecord: 53dc392fbb4c8a8942f966bab9da8d9441532765
   ObjectiveSugar: fed588577bcf9733546aeaa089de444e4bab9a52
   SimpleSyncService: 6d440198af0797dd06e12fea60094dc57c0247cb
 
