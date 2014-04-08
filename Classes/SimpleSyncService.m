@@ -38,6 +38,22 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
                       andModelIdentifierNamed:modelPropertyName];
 }
 
+@interface NSOperationQueue (SimpleSyncService)
+
+- (void)DMM_enqueueBlock:(void(^)())block;
+@end
+
+@implementation NSOperationQueue (SimpleSyncService)
+
+- (void)DMM_enqueueBlock:(void (^)())block
+{
+    NSBlockOperation *operation = [[NSBlockOperation alloc] init];
+    [operation addExecutionBlock:block];
+    [self addOperation:operation];
+}
+
+@end
+
 @interface SimpleSyncService ()
 
 @property (nonatomic, strong) NSArray *adapters;
@@ -81,30 +97,20 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
 
 - (void)fireTimer:(NSTimer *)timer {
     DMMSyncServiceAdapter *adapter = (DMMSyncServiceAdapter *)timer.userInfo;
-    NSBlockOperation *operation = [[NSBlockOperation alloc] init];
-    [operation addExecutionBlock:^{
+    [self.queue DMM_enqueueBlock:^{
         [adapter fetchDataWithCompletion:^(NSArray *fetchedData, NSError *error) {
-            NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-            context.parentContext = [[CoreDataManager sharedManager] managedObjectContext];
-
-            [SimpleSyncService synchronizeData:fetchedData
-                                withEntityName:adapter.entityName
-                                     inContext:context
-                           withIdentifierNamed:adapter.fetchedDataIDKey];
+            syncData(fetchedData, adapter.entityName, adapter.fetchedDataIDKey, adapter.fetchedDataIDKey);
         }];
     }];
-    [self.queue addOperation:operation];
 }
 
 + (void)synchronizeData:(NSArray *)data
          withEntityName:(NSString *)entityName
     withIdentifierNamed:(NSString *)identifierPropertyName
                useQueue:(NSOperationQueue *)queue {
-    NSBlockOperation *operation = [[NSBlockOperation alloc] init];
-    [operation addExecutionBlock:^{
+    [queue DMM_enqueueBlock:^{
         syncData(data, entityName, identifierPropertyName, identifierPropertyName);
     }];
-    [queue addOperation:operation];
 }
 
 + (void)synchronizeData:(NSArray *)data
@@ -112,11 +118,9 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
 withDataIdentifierNamed:(NSString *)dataPropertyName
 andModelIdentifierNamed:(NSString *)modelPropertyName
                useQueue:(NSOperationQueue *)queue {
-    NSBlockOperation *operation = [[NSBlockOperation alloc] init];
-    [operation addExecutionBlock:^{
+    [queue DMM_enqueueBlock:^{
         syncData(data, entityName, dataPropertyName, modelPropertyName);
     }];
-    [queue addOperation:operation];
 }
 
 + (BOOL)synchronizeData:(NSArray *)data
