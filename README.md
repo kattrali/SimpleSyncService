@@ -1,4 +1,9 @@
-# SimpleSyncService [![Build Status](https://travis-ci.org/kattrali/SimpleSyncService.png?branch=master)](https://travis-ci.org/kattrali/SimpleSyncService)
+# SimpleSyncService [![CocoaPod][pd-bdg]][pd] [![Build Status][ci-bdg]][ci]
+
+[pd-bdg]: https://img.shields.io/cocoapods/v/SimpleSyncService.svg
+[pd]: http://cocoadocs.org/docsets/SimpleSyncService
+[ci-bdg]: https://travis-ci.org/kattrali/SimpleSyncService.svg
+[ci]: https://travis-ci.org/kattrali/SimpleSyncService
 
 A simple, customizable service for updating Core Data models. It uses [ObjectiveRecord](https://github.com/supermarin/ObjectiveRecord) for mapping data in dictionary format to a Core Data entity's properties.
 
