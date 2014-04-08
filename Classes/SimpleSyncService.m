@@ -58,6 +58,9 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
 }
 
 - (void)start {
+    if (self.adapterTimers.count > 0)
+        return;
+
     NSRunLoop *runner = [NSRunLoop currentRunLoop];
 
     for (DMMSyncServiceAdapter *adapter in self.adapters) {
