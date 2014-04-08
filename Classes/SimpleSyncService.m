@@ -180,7 +180,7 @@ andModelIdentifierNamed:(NSString *)modelPropertyName {
                 NSError * propagation = nil;
                 [parent save:&propagation];
                 if (propagation)
-                    NSLog(@"ERROR: Synchronization Service failed to propagate changes to main context: %@", propagation.localizedDescription);
+                    NSLog(@"ERROR: Synchronization Service failed to propagate changes to parent context: %@", propagation.localizedDescription);
             }];
         }
     } else {

@@ -11,6 +11,8 @@
 #import "PeopleAPI.h"
 #import "PeopleAPISyncAdapter.h"
 
+#define shouldSoon shouldEventuallyBeforeTimingOutAfter(0.8)
+
 static void synchronizeData(NSArray *data) {
     NSManagedObjectContext *context = [[CoreDataManager sharedManager] managedObjectContext];
     [SimpleSyncService synchronizeData:data
@@ -126,13 +128,13 @@ describe(@"simple service", ^{
 
             it(@"inserts new records", ^{
                 returnDataFromAPI(@[samplePersonData]);
-                [[expectFutureValue([Person where:@{@"name":@"Delisa Mason"}]) shouldEventually] haveCountOf:1];
+                [[expectFutureValue([Person where:@{@"name":@"Delisa Mason"}]) shouldSoon] haveCountOf:1];
             });
 
             it(@"updates existing records", ^{
                 synchronizeData(@[samplePersonData]);
                 returnDataFromAPI(@[updatedPersonData]);
-                [[expectFutureValue([((Person *)[[Person where:@{@"name":@"Delisa Mason"}] firstObject]) numberOfCats]) shouldEventually] equal:@2];
+                [[expectFutureValue([((Person *)[[Person where:@{@"name":@"Delisa Mason"}] firstObject]) numberOfCats]) shouldSoon] equal:@2];
             });
         });
     });
