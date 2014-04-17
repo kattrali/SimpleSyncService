@@ -1,3 +1,8 @@
+# 1.2.2
+
+- Changes timer behavior to fire timers once during service
+  initialization, and then afterward wait for the delay
+
 # 1.2.1 
 
 - Fixes parent potentially saving on incorrect queue
