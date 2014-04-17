@@ -1,7 +1,7 @@
 platform :osx, "10.8"
 
 pod "ObjectiveSugar"
-pod "AFNetworking"
+pod "AFNetworking", "2.1.0"
 pod "SimpleSyncService", :path =>"../"
 
 target :SampleProjectTests, :exclusive => true do
