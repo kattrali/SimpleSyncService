@@ -85,6 +85,7 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
                                                selector:@selector(fireTimer:)
                                                userInfo:adapter
                                                 repeats:YES];
+        [self fireTimer:timer];
         [runner addTimer:timer forMode:NSDefaultRunLoopMode];
         [self.adapterTimers addObject:timer];
     }
