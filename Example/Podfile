@@ -1,7 +1,8 @@
 platform :osx, "10.8"
 
 pod "SimpleSyncService", :path =>"../"
+pod "ObjectiveSugar"
 
 target :SampleProjectTests, :exclusive => true do
-  pod 'Kiwi/XCTest'
+  pod "Kiwi/XCTest"
 end

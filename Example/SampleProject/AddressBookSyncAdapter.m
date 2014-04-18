@@ -7,19 +7,20 @@
 //
 
 #import "AddressBookSyncAdapter.h"
+#import "PeopleAPI.h"
 #import <AddressBook/AddressBook.h>
 
 @implementation AddressBookSyncAdapter
 
-- (void)fetchDataWithCompletion:(SyncCompletionBlock)completionBlock {
+- (void)fetchDataWithCompletion:(FetchCompletionBlock)completionBlock {
     NSLog(@"Searching address book for Cat Club members...");
     ABAddressBook *book = [ABAddressBook sharedAddressBook];
     ABSearchElement *hasCatClubEmail =
-    [ABPerson searchElementForProperty:kABEmailProperty
-                                 label:nil
-                                   key:nil
-                                 value:@"catclub.org"
-                            comparison:kABContainsSubStringCaseInsensitive];
+        [ABPerson searchElementForProperty:kABEmailProperty
+                                     label:nil
+                                       key:nil
+                                     value:@"catclub.org"
+                                comparison:kABContainsSubStringCaseInsensitive];
     NSArray *searchResults = [book recordsMatchingSearchElement:hasCatClubEmail];
     completionBlock([self formatRecords:searchResults], nil);
 }
