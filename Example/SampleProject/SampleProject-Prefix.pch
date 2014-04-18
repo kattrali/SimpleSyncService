@@ -7,7 +7,6 @@
 #ifdef __OBJC__
     #import <Cocoa/Cocoa.h>
     #import <CoreData/CoreData.h>
-    #import <ObjectiveSugar/ObjectiveSugar.h>
     #import <ObjectiveRecord/ObjectiveRecord.h>
     #import <SimpleSyncService/SimpleSyncService.h>
 #endif

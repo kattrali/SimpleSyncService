@@ -7,21 +7,21 @@
 //
 
 #import "PeopleAPI.h"
-#import <AFNetworking/AFHTTPRequestOperationManager.h>
 
 static NSString * const PEOPLE_API_ENDPOINT = @"http://example.com/api/v1/people.json";
 
 @implementation PeopleAPI
 
 + (void)fetchUpdatedDataWithCompletionBlock:(FetchCompletionBlock)block {
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    [manager GET:PEOPLE_API_ENDPOINT
-      parameters:nil
-         success:^(AFHTTPRequestOperation *operation, id responseObject) {
-             block(responseObject, nil);
-         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-             block(nil, error);
-         }];
+    NSURLRequest* request = [NSURLRequest requestWithURL:[NSURL URLWithString:PEOPLE_API_ENDPOINT]];
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (connectionError) {
+            block(nil, connectionError);
+            return;
+        }
+        NSArray* people = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:nil];
+        block(people, connectionError);
+    }];
 }
 
 @end
