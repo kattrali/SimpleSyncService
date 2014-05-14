@@ -41,11 +41,22 @@ typedef void (^SyncCompletionBlock)(NSArray *fetchedData, NSError *error);
 @property (readonly, nonatomic, strong) NSString *entityName;
 
 /**
- The property contained by the entity and fetched data which should
- be used to determine whether a fetched data object should be used to
- update an existing record or create a new one.
+ The property fetched data which should be used to determine whether 
+ a fetched data object should be used to update an existing record 
+ or create a new one
+ 
+ @note This property is translated into a corresponding
+ entity attribute using ObjectiveRecord's mappings feature if 
+ `modelIDKey` is nil.
  */
 @property (readonly, nonatomic, strong) NSString *fetchedDataIDKey;
+
+/**
+ The attribute contained by the entity which should be used to uniquely
+ identify an existing record and determine whether to update a record
+ or create a new one
+ */
+@property (readonly, nonatomic, strong) NSString * modelIDKey;
 
 /**
  Create a new synchronization adapter
@@ -61,6 +72,22 @@ typedef void (^SyncCompletionBlock)(NSArray *fetchedData, NSError *error);
 - (id)initWithInterval:(NSTimeInterval)seconds
             entityName:(NSString *)entityName
       fetchedDataIDKey:(NSString *)fetchedDataIDKey;
+
+/**
+ Create a new synchronization adapter
+ @param interval time interval in seconds at which the adapter should
+ be triggered
+ @param entityName the entity name of the Core Data model to be updated
+ @param fetchedDataIDKey the name of a key on each of the fetched data
+ dictionary objects uniquely identifying it in the array
+ @param modelIDKey the property name on the corresponding Core Data model
+ uniquely identifying it for data in the array
+ @see ObjectiveRecord/NSManagedObject+Mappings.h
+ */
+- (id)initWithInterval:(NSTimeInterval)seconds
+            entityName:(NSString *)entityName
+      fetchedDataIDKey:(NSString *)fetchedDataIDKey
+            modelIDKey:(NSString *)modelIDKey;
 
 /**
  Data fetching method invoked by the synchronization service. Once the 

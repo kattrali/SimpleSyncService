@@ -119,22 +119,44 @@ describe(@"simple service", ^{
 
         describe(@"scheduling with adapters", ^{
 
-            beforeEach(^{
-                synchronizeData(@[samplePersonData]);
-                NSArray *adapters = @[[[PeopleAPISyncAdapter alloc] initWithInterval:0.75 entityName:[Person entityName] fetchedDataIDKey:@"email"]];
-                SimpleSyncService *service = [[SimpleSyncService alloc] initWithAdapters:adapters useQueue:[[NSOperationQueue alloc] init]];
-                [service start];
+            context(@"the model ID and fetched data ID are the same", ^{
+                beforeEach(^{
+                    synchronizeData(@[samplePersonData]);
+                    NSArray *adapters = @[[[PeopleAPISyncAdapter alloc] initWithInterval:0.75 entityName:[Person entityName] fetchedDataIDKey:@"email"]];
+                    SimpleSyncService *service = [[SimpleSyncService alloc] initWithAdapters:adapters useQueue:[[NSOperationQueue alloc] init]];
+                    [service start];
+                });
+
+                it(@"inserts new records", ^{
+                    returnDataFromAPI(@[samplePersonData]);
+                    [[expectFutureValue([Person where:@{@"name":@"Delisa Mason"}]) shouldSoon] haveCountOf:1];
+                });
+
+                it(@"updates existing records", ^{
+                    synchronizeData(@[samplePersonData]);
+                    returnDataFromAPI(@[updatedPersonData]);
+                    [[expectFutureValue([((Person *)[[Person where:@{@"name":@"Delisa Mason"}] firstObject]) numberOfCats]) shouldSoon] equal:@2];
+                });
             });
 
-            it(@"inserts new records", ^{
-                returnDataFromAPI(@[samplePersonData]);
-                [[expectFutureValue([Person where:@{@"name":@"Delisa Mason"}]) shouldSoon] haveCountOf:1];
-            });
+            context(@"the model ID and fetched data ID are different", ^{
+                beforeEach(^{
+                    synchronizeData(@[samplePersonData]);
+                    NSArray *adapters = @[[[PeopleAPISyncAdapter alloc] initWithInterval:0.75 entityName:[Person entityName] fetchedDataIDKey:@"email" modelIDKey:@"name"]];
+                    SimpleSyncService *service = [[SimpleSyncService alloc] initWithAdapters:adapters useQueue:[[NSOperationQueue alloc] init]];
+                    [service start];
+                });
 
-            it(@"updates existing records", ^{
-                synchronizeData(@[samplePersonData]);
-                returnDataFromAPI(@[updatedPersonData]);
-                [[expectFutureValue([((Person *)[[Person where:@{@"name":@"Delisa Mason"}] firstObject]) numberOfCats]) shouldSoon] equal:@2];
+                it(@"inserts new records", ^{
+                    returnDataFromAPI(@[samplePersonData]);
+                    [[expectFutureValue([Person where:@{@"name":@"Delisa Mason"}]) shouldSoon] haveCountOf:1];
+                });
+
+                it(@"updates existing records", ^{
+                    synchronizeData(@[samplePersonData]);
+                    returnDataFromAPI(@[@{@"email": samplePersonData[@"name"], @"number_of_cats":@5}]);
+                    [[expectFutureValue([Person find:@{@"name":@"Delisa Mason"}]) shouldSoon] haveValue:@5 forKey:@"numberOfCats"];
+                });
             });
         });
     });

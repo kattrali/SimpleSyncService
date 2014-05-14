@@ -100,17 +100,8 @@ static BOOL syncData(NSArray *data, NSString *entityName, NSString *dataProperty
     DMMSyncServiceAdapter *adapter = (DMMSyncServiceAdapter *)timer.userInfo;
     [self.queue DMM_enqueueBlock:^{
         [adapter fetchDataWithCompletion:^(NSArray *fetchedData, NSError *error) {
-            syncData(fetchedData, adapter.entityName, adapter.fetchedDataIDKey, adapter.fetchedDataIDKey);
+            syncData(fetchedData, adapter.entityName, adapter.fetchedDataIDKey, adapter.modelIDKey);
         }];
-    }];
-}
-
-+ (void)synchronizeData:(NSArray *)data
-         withEntityName:(NSString *)entityName
-    withIdentifierNamed:(NSString *)identifierPropertyName
-               useQueue:(NSOperationQueue *)queue {
-    [queue DMM_enqueueBlock:^{
-        syncData(data, entityName, identifierPropertyName, identifierPropertyName);
     }];
 }
 
@@ -122,6 +113,13 @@ andModelIdentifierNamed:(NSString *)modelPropertyName
     [queue DMM_enqueueBlock:^{
         syncData(data, entityName, dataPropertyName, modelPropertyName);
     }];
+}
+
++ (void)synchronizeData:(NSArray *)data
+         withEntityName:(NSString *)entityName
+    withIdentifierNamed:(NSString *)identifierPropertyName
+               useQueue:(NSOperationQueue *)queue {
+    [self synchronizeData:data withEntityName:entityName withDataIdentifierNamed:identifierPropertyName andModelIdentifierNamed:identifierPropertyName useQueue:queue];
 }
 
 + (BOOL)synchronizeData:(NSArray *)data
@@ -172,8 +170,7 @@ andModelIdentifierNamed:(NSString *)modelPropertyName {
 
 + (NSManagedObject *)recordInArray:(NSArray *)records withValue:(id)value forKey:(NSString *)key {
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"%K == %@", key, value];
-    NSArray *matches = [records filteredArrayUsingPredicate:predicate];
-    return [matches firstObject];
+    return [[records filteredArrayUsingPredicate:predicate] firstObject];
 }
 
 + (BOOL)saveContext:(NSManagedObjectContext *)context {

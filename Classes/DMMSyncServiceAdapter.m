@@ -29,7 +29,7 @@
 @property (readwrite, nonatomic) NSTimeInterval interval;
 @property (readwrite, nonatomic, strong) NSString * entityName;
 @property (readwrite, nonatomic, strong) NSString * fetchedDataIDKey;
-
+@property (readwrite, nonatomic, strong) NSString * modelIDKey;
 @end
 
 @implementation DMMSyncServiceAdapter
@@ -41,6 +41,21 @@
         _interval = seconds;
         _entityName = entityName;
         _fetchedDataIDKey = fetchedDataIDKey;
+        _modelIDKey = fetchedDataIDKey;
+    }
+
+    return self;
+}
+
+- (id)initWithInterval:(NSTimeInterval)seconds
+            entityName:(NSString *)entityName
+      fetchedDataIDKey:(NSString *)fetchedDataIDKey
+            modelIDKey:(NSString *)modelIDKey {
+    if (self = [super init]) {
+        _interval = seconds;
+        _entityName = entityName;
+        _fetchedDataIDKey = fetchedDataIDKey;
+        _modelIDKey = modelIDKey;
     }
 
     return self;

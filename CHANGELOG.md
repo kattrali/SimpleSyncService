@@ -1,3 +1,7 @@
+# 1.2.3
+
+- Add option to use different data and model property names during background sync using adapters
+
 # 1.2.2
 
 - Changes timer behavior to fire timers once during service
